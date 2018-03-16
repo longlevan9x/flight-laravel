@@ -21,7 +21,14 @@ Route::post('login', 'Auth\LoginController@login');
 Route::post('register', 'Auth\RegisterController@register');
 
 Route::group(['middleware' => ['api']], function () {
-//    Route::resourse('flight', 'FlightController');
+    Route::group(['prefix' => 'flight'],function () {
+        Route::get('/', 'Api\FlightController@index');
+        Route::get('/{id}', 'Api\FlightController@show');
+        Route::put('/{id}', 'Api\FlightController@show');
+        Route::post('/', 'Api\FlightController@show');
+        Route::delete('/{id}', 'Api\FlightController@show');
+    });
+//    Route::resourse('flight', 'Api\FlightController');
 //    Route::resourse('airline', 'AirlineController');
 //    Route::resourse('flight-book', 'FlightBookController');
 //    Route::resourse('transaction', 'TransactionController');
