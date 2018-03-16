@@ -5,6 +5,9 @@ namespace App;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
+/**
+ * @property string token
+ */
 class User extends Authenticatable
 {
     use Notifiable;
@@ -15,9 +18,9 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password',
+        'username', 'email', 'role', 'password'
     ];
-
+    
     /**
      * The attributes that should be hidden for arrays.
      *
@@ -26,4 +29,14 @@ class User extends Authenticatable
     protected $hidden = [
         'password', 'remember_token',
     ];
+
+    /**
+     * @return mixed|string
+     */
+    public function generateToken()
+    {
+        $this->token = str_random(60);
+        $this->save();
+        return $this->token;
+    }
 }
