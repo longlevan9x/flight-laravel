@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Api;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Airline;
+use Illuminate\Support\Facades\Validator;
+
 class AirlineController extends Controller
 {
     /**
@@ -14,7 +16,7 @@ class AirlineController extends Controller
      */
     public function index()
     {
-        $data = (new Airline)->paginate(4);
+        $data = (new Airline)->paginate(100);
         return response()->json(['message' => 'ok', 'result' => $data]);
     }
 
@@ -36,6 +38,14 @@ class AirlineController extends Controller
      */
     public function store(Request $request)
     {
+        /** @var \Illuminate\Contracts\Validation\Validator $validator */
+        $validator = Validator::make($request->all(), [
+            'airline_name' => 'required|string|max:255|unique:airlines',
+            'city_name' => 'required',
+        ]);
+        if ($validator->fails()) {
+            return response()->json($validator->errors());
+        }
         $model = Airline::create($request->all());
         return response()->json(['message' => 'ok', 'result' => $model], 200);
     }
@@ -81,13 +91,19 @@ class AirlineController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param  int $id
      * @return \Illuminate\Http\Response
+     * @throws \Exception
      */
     public function destroy($id)
     {
-        $model = Airline::findOrFail($id);
-        $model->delete();
-        return response()->json(['message' => 'ok'], 204);
+        $model = Airline::find($id);
+        if (isset($model) && !empty($model)) {
+            $model->delete();
+            return response()->json(['message' => 'ok'], 200);
+        }
+        else {
+            return response()->json(['message' => 'fail', 'text' => 'Airline not found'], 400);
+        }
     }
 }

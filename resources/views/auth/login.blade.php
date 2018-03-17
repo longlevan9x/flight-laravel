@@ -1,64 +1,27 @@
-@extends('layouts.app')
+@extends('index')
 
 @section('content')
 <div class="container">
     <div class="row">
-        <div class="col-md-8 col-md-offset-2">
+        <div class="col-md-6 col-md-push-3">
+            <h2>Log in to your account</h2>
             <div class="panel panel-default">
-                <div class="panel-heading">Login</div>
-
                 <div class="panel-body">
-                    <form class="form-horizontal" method="POST" action="{{ route('login') }}">
+                    <form id="form-login" role="form" action="#" method="post">
                         {{ csrf_field() }}
-
-                        <div class="form-group{{ $errors->has('email') ? ' has-error' : '' }}">
-                            <label for="email" class="col-md-4 control-label">E-Mail Address</label>
-
-                            <div class="col-md-6">
-                                <input id="email" type="email" class="form-control" name="email" value="{{ old('email') }}" required autofocus>
-
-                                @if ($errors->has('email'))
-                                    <span class="help-block">
-                                        <strong>{{ $errors->first('email') }}</strong>
-                                    </span>
-                                @endif
-                            </div>
-                        </div>
-
-                        <div class="form-group{{ $errors->has('password') ? ' has-error' : '' }}">
-                            <label for="password" class="col-md-4 control-label">Password</label>
-
-                            <div class="col-md-6">
-                                <input id="password" type="password" class="form-control" name="password" required>
-
-                                @if ($errors->has('password'))
-                                    <span class="help-block">
-                                        <strong>{{ $errors->first('password') }}</strong>
-                                    </span>
-                                @endif
-                            </div>
-                        </div>
-
                         <div class="form-group">
-                            <div class="col-md-6 col-md-offset-4">
-                                <div class="checkbox">
-                                    <label>
-                                        <input type="checkbox" name="remember" {{ old('remember') ? 'checked' : '' }}> Remember Me
-                                    </label>
-                                </div>
-                            </div>
+                            <label class="control-label">Email Address:</label>
+                            <input type="email"  name="email" class="form-control" placeholder="Enter your email address">
                         </div>
-
                         <div class="form-group">
-                            <div class="col-md-8 col-md-offset-4">
-                                <button type="submit" class="btn btn-primary">
-                                    Login
-                                </button>
-
-                                <a class="btn btn-link" href="{{ route('password.request') }}">
-                                    Forgot Your Password?
-                                </a>
-                            </div>
+                            <label class="control-label">Password:</label>
+                            <input type="password" name="password" class="form-control" placeholder="Enter your password">
+                        </div>
+                        <span class="help-block">
+                            <strong></strong>
+                        </span>
+                        <div class="text-right">
+                            <button type="submit" id="btnLogin" class="btn btn-primary">Log In</button>
                         </div>
                     </form>
                 </div>
@@ -66,4 +29,60 @@
         </div>
     </div>
 </div>
+<script>
+    $(function () {
+        $('#btnLogin').click(function () {
+            if ($('#form-login').serializeArray().length > 1) {
+                $('#form-login').submit(function (event) {
+                    event.preventDefault();
+                });
+                var login = $.ajax({
+                    url : "{{url('api/v1/login')}}",
+                    type :  'post',
+                    data : $('#form-login').serializeArray()
+                });
+
+                login.done(function (result) {
+                    if(result.message === 'fail') {
+                        let html = "";
+                        $.each(result.result, function (index, item) {
+                            html += '<strong>' + item + '</strong><br>';
+                        });
+                        $('.help-block').html(html);
+                        return false;
+                    }
+                    else {
+                        setSession(result.result);
+                    }
+                });
+
+                login.fail(function (error) {
+                    alert(error.responseJSON.error);
+                });
+
+                function setSession(result) {
+
+                    result._token = '{{csrf_token()}}';
+                    let ajx = $.ajax({
+                        url : '{{url('set-session')}}',
+                        type : 'post',
+                        data : result
+                    });
+
+                    ajx.done(function (result) {
+                        if(result.message === 'ok') {
+                            window.location.href = "{{url('home')}}";
+                        }
+                        else {
+                            alert(result.text);
+                        }
+                    });
+                    ajx.fail(function (error) {
+                        console.log(error);
+                    });
+                }
+            }
+        });
+    });
+</script>
 @endsection

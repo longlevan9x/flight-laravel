@@ -13,10 +13,8 @@ class FlightController extends Controller
     	return view('flight.index');
     }
 
-    public function list(Request $request)
-    {
-        var_dump($request->all());die;
-    	return view('flight.list');
+    public function listFlight() {
+        return view('flight.list');
     }
 
    	public function detail()
@@ -30,7 +28,7 @@ class FlightController extends Controller
         \App\Flight::truncate();
         $faker = \Faker\Factory::create();
         for ($i = 0; $i < 50; $i++) {
-            $random = random_int(0 , 50);
+            $random = random_int(0 , 49);
             \App\Flight::create([
                 'flight_code' => $faker->postcode . $faker->countryCode,
                 'from_date' => $faker->date(),

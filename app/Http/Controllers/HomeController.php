@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
+
 class HomeController extends Controller
 {
     /**
@@ -13,7 +14,7 @@ class HomeController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('web');
+        $this->middleware('guest');
     }
 
     /**
@@ -21,14 +22,15 @@ class HomeController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request)
+    public function index()
     {
-        return view('home.index');
+        return view('home');
     }
 
-    public function setSession(Request $request)
-    {
-        Session::put('users', $request->get('users'));
-        return response()->json(['message' => 'success']);
+    public function setSession(Request $request) {
+        Session::put('token', $request->token);
+        Session::put('role', $request->role);
+        Session::put('username', $request->username);
+        return response()->json(['message' => 'ok'], 200);
     }
 }

@@ -6,7 +6,11 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
 /**
- * @property string token
+ * @property mixed username
+ * @property mixed password
+ * @property mixed role
+ * @property mixed email
+ * @property mixed|string api_token
  */
 class User extends Authenticatable
 {
@@ -18,7 +22,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'username', 'email', 'role', 'password'
+        'username', 'email', 'role', 'password', 'api_token'
     ];
     
     /**
@@ -31,12 +35,15 @@ class User extends Authenticatable
     ];
 
     /**
+     * @param bool $save
      * @return mixed|string
      */
-    public function generateToken()
+    public function generateToken($save = true)
     {
-        $this->token = str_random(60);
-        $this->save();
-        return $this->token;
+        $this->api_token = str_random(60);
+        if ($save) {
+            $this->save();
+        }
+        return $this->api_token;
     }
 }

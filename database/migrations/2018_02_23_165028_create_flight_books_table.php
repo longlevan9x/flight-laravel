@@ -15,6 +15,7 @@ class CreateFlightBooksTable extends Migration
     {
         Schema::create('flight_books', function (Blueprint $table) {
             $table->increments('id');
+            $table->integer('airline_id');
             $table->string('flight_type', 10);
             $table->date('from_date');
             $table->time('from_time');

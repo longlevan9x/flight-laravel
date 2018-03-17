@@ -68,14 +68,14 @@ class RegisterController extends Controller
             'username' => $data['username'],
             'email'    => $data['email'],
             'password' => bcrypt($data['password']),
-            'role'     => $data['role'],
+            'role'     => isset($data['role']) ? $data['role'] : 'user',
         ]);
     }
 
     protected function registered(Request $request,User $user)
     {
-        $user->generateToken();
-        return response()->json(['data' => $user->toArray()], 201);
+        $user->generateToken(true);
+        return response()->json(['message' => 'ok' , 'result' => $user->toArray()], 201);
     }
 
     /**
@@ -90,7 +90,7 @@ class RegisterController extends Controller
             return view('auth.register');
         }
         if ($this->validator($request->all())->fails()) {
-            return response()->json($this->validator($request->all())->errors());
+            return response()->json(['message' => 'fail', 'result' => $this->validator($request->all())->errors()]);
         }
         event(new Registered($user = $this->create($request->all())));
         return $this->registered($request, $user)

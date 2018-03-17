@@ -4,6 +4,19 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * @property mixed title
+ * @property mixed first_name
+ * @property mixed ccv
+ * @property mixed card_number
+ * @property mixed card_name
+ * @property mixed payment_method
+ * @property mixed phone
+ * @property mixed email
+ * @property mixed last_name
+ * @property string payment_status
+ * @property mixed id
+ */
 class Transaction extends Model
 {
 	// •title (Mr, Mrs, Miss, Dr)
@@ -17,6 +30,15 @@ class Transaction extends Model
 	// •ccv (if pay by credit card)
 
     protected $fillable = [
-    	'title', 'first_name', 'last_name', 'email', 'phone', 'payment_method', 'card_name', 'card_number', 'ccv'
+    	'title',
+        'first_name',
+        'last_name',
+        'email',
+        'phone',
+        'payment_method',
+        'payment_status',
+        'card_name',
+        'card_number',
+        'ccv'
 	];
 }
